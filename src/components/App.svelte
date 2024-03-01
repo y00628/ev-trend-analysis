@@ -15,7 +15,7 @@
         // read in disasters_cleaned
         const res1 = await fetch('disasters_cleaned.csv'); 
         const csv = await res1.text();
-        tobacco = d3.csvParse(csv, d3.autoType)
+        let tobacco = d3.csvParse(csv, d3.autoType)
         console.log(disasters);
 
         // read in topojson
@@ -43,8 +43,8 @@
             .attr("height", height);
 
         // creates base map
-        const projection = d3.geoEqualEarth();
-        const path = d3.geoPath(projection);
+        const projection = d3.geoAlbersUsa();
+        const path = d3.geoPath().projection(projection);
 
         // creates map border
         svg
