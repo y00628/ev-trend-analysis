@@ -162,7 +162,7 @@
         
 
         // use this function to update color
-        let selectedType = 'count'; // i.e. the count of all the disasters as default value
+        let selectedType = 'Total'; // i.e. the count of all the disasters as default value
         let selectedYear = 2023;
         
         populate_color(tobacco, selectedType, selectedYear);
