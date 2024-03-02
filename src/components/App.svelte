@@ -134,7 +134,7 @@
             // creates color code for our map
             const globalValueExtent = d3.extent(disasters, d => d[disaster_type]);
             // Define a global color scale
-            const globalColorScale = d3.scaleSequential(globalValueExtent, d3.interpolateYlGnBu);
+            const globalColorScale = d3.scaleSequential(globalValueExtent, d3.interpolateReds);
             const defaultColor = "#cccccc";
 
             const filtered = dataset.filter(
