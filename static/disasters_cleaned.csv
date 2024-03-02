@@ -1,4 +1,4 @@
-year,state,count,Biological,Chemical,Coastal Storm,Dam/Levee Break,Drought,Earthquake,Fire,Fishing Losses,Flood,Freezing,Human Cause,Hurricane,Mud/Landslide,Other,Severe Ice Storm,Severe Storm,Snowstorm,Terrorist,Tornado,Toxic Substances,Tropical Storm,Tsunami,Typhoon,Volcanic Eruption,Winter Storm
+year,state,Total,Biological,Chemical,Coastal Storm,Dam/Levee Break,Drought,Earthquake,Fire,Fishing Losses,Flood,Freezing,Human Cause,Hurricane,Mud/Landslide,Other,Severe Ice Storm,Severe Storm,Snowstorm,Terrorist,Tornado,Toxic Substances,Tropical Storm,Tsunami,Typhoon,Volcanic Eruption,Winter Storm
 1953,GA,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0
 1953,IA,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 1953,LA,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

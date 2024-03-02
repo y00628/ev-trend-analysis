@@ -3,6 +3,70 @@
     import * as topojson from "topojson";
     import { onMount } from 'svelte';
 
+    function rename() {
+        return new Map([
+            ['AL', 'Alabama'], 
+            ['AK', 'Alaska'], 
+            ['AS', 'American Samoa'], 
+            ['AZ', 'Arizona'], 
+            ['AR', 'Arkansas'], 
+            ['AA', 'Armed Forces Americas'], 
+            ['AE', 'Armed Forces Europe'], 
+            ['AP', 'Armed Forces Pacific'], 
+            ['CA', 'California'], 
+            ['CO', 'Colorado'], 
+            ['CT', 'Connecticut'], 
+            ['DE', 'Delaware'], 
+            ['DC', 'District Of Columbia'], 
+            ['FL', 'Florida'], 
+            ['GA', 'Georgia'], 
+            ['GU', 'Guam'], 
+            ['HI', 'Hawaii'], 
+            ['ID', 'Idaho'], 
+            ['IL', 'Illinois'], 
+            ['IN', 'Indiana'], 
+            ['IA', 'Iowa'], 
+            ['KS', 'Kansas'], 
+            ['KY', 'Kentucky'], 
+            ['LA', 'Louisiana'], 
+            ['ME', 'Maine'], 
+            ['MH', 'Marshall Islands'], 
+            ['MD', 'Maryland'], 
+            ['MA', 'Massachusetts'], 
+            ['MI', 'Michigan'], 
+            ['MN', 'Minnesota'], 
+            ['MS', 'Mississippi'], 
+            ['MO', 'Missouri'], 
+            ['MT', 'Montana'], 
+            ['NE', 'Nebraska'], 
+            ['NV', 'Nevada'], 
+            ['NH', 'New Hampshire'], 
+            ['NJ', 'New Jersey'], 
+            ['NM', 'New Mexico'], 
+            ['NY', 'New York'], 
+            ['NC', 'North Carolina'], 
+            ['ND', 'North Dakota'], 
+            ['NP', 'Northern Mariana Islands'], 
+            ['OH', 'Ohio'], 
+            ['OK', 'Oklahoma'], 
+            ['OR', 'Oregon'], 
+            ['PA', 'Pennsylvania'], 
+            ['PR', 'Puerto Rico'], 
+            ['RI', 'Rhode Island'], 
+            ['SC', 'South Carolina'], 
+            ['SD', 'South Dakota'], 
+            ['TN', 'Tennessee'], 
+            ['TX', 'Texas'], 
+            ['VI', 'US Virgin Islands'], 
+            ['UT', 'Utah'], 
+            ['VT', 'Vermont'], 
+            ['VA', 'Virginia'], 
+            ['WA', 'Washington'], 
+            ['WV', 'West Virginia'], 
+            ['WI', 'Wisconsin'], 
+            ['WY', 'Wyoming']]);
+    }
+
     // stores all data here
     //
     let disasters = [];
@@ -15,7 +79,7 @@
         // read in disasters_cleaned
         const res1 = await fetch('disasters_cleaned.csv'); 
         const csv = await res1.text();
-        let tobacco = d3.csvParse(csv, d3.autoType)
+        let disasters = d3.csvParse(csv, d3.autoType)
         console.log(disasters);
 
         // read in topojson
@@ -31,6 +95,15 @@
             (a, b) => a !== b
         ); 
 
+        // Update country names in your dataset
+        const renameMap = rename();
+        disasters.forEach(d => {
+
+            if (renameMap.has(d.state)) {
+                d.state = renameMap.get(d.state); // Replace with the name from the map
+            }
+        });
+
         // creates SVG with specified characteristics
         const width = 1000;
         const marginTop = 46;
@@ -44,7 +117,7 @@
 
         // creates base map
         const projection = d3.geoAlbersUsa();
-        const path = d3.geoPath().projection(projection);
+        const path = d3.geoPath(projection);
 
         // creates map border
         svg
@@ -56,24 +129,20 @@
 
         const g = svg.append("g");
 
-        // creates color code for our map
-        const globalValueExtent = d3.extent(disasters, d => d.FactValueNumeric);
-        // Define a global color scale
-        const globalColorScale = d3.scaleSequential(globalValueExtent, d3.interpolateYlGnBu);
-        const defaultColor = "#cccccc";
+        function populate_color(dataset, disaster_type, year){
 
-        function populate_color(dataset, sex, year){
-            console.log(dataset);
+            // creates color code for our map
+            const globalValueExtent = d3.extent(disasters, d => d[disaster_type]);
+            // Define a global color scale
+            const globalColorScale = d3.scaleSequential(globalValueExtent, d3.interpolateYlGnBu);
+            const defaultColor = "#cccccc";
+
             const filtered = dataset.filter(
-            (entry) => entry.Dim1 == sex && entry.Period == year && entry.Indicator == 'Estimate of current tobacco use prevalence (%) (age-standardized rate)'
-            );
-            console.log(filtered);
+            (entry) => entry.year == year);
 
             const valuemap = new Map(
-                filtered.map((d) => [d.Location, +d.FactValueNumeric])
+                filtered.map((d) => [d.state, +d[disaster_type]])
             );
-
-            console.log(valuemap);
 
             // assigns colors to countries based on FactValueNumeric data
             
@@ -98,7 +167,7 @@
                     const stateName = d.properties.name;
                     const dataValue = valuemap.get(stateName); // Get the data value for this country
                     // Check if the country was found in the dataset and has a valid data value
-                    return dataValue !== undefined ? `${stateName}\n${dataValue}%` : `${stateName}\nNo Data`;
+                    return dataValue !== undefined ? `${stateName}\n${dataValue} Times This Year` : `${stateName}\nNo Disasters Recorded`;
                 });
 
             // adds a white border between countries for *aesthetics*
@@ -112,11 +181,11 @@
             const legendWidth = 300, legendHeight = 20, legendMargin = {top: 10, right: 60, bottom: 40, left: 60};
 
             // Create a sequential color scale (if different, adjust as needed)
-            const colorScale = d3.scaleSequential(d3.extent(disasters.map(d => +d.FactValueNumeric)), d3.interpolateYlGnBu);
+            const colorScale = d3.scaleSequential(d3.extent(disasters.map(d => +d[disaster_type])), d3.interpolateYlGnBu);
 
             // Define the legend scale
             const legendScale = d3.scaleLinear()
-                .domain(d3.extent(tobacco.map(d => +d.FactValueNumeric)))
+                .domain(d3.extent(disasters.map(d => +d[disaster_type])))
                 .range([0, legendWidth]);
 
             // Append a legend group to the SVG
@@ -156,7 +225,7 @@
                 .attr("x", 300)
                 .attr("y", -5)
                 .attr("text-anchor", "end")
-                .text("Estimate of Year " + year + " Tobacco Use Prevalence in " + sex + " (%) (Age-standardized Rate)");
+                .text("Year " + year + " " + disaster_type);
         };
 
         
@@ -165,30 +234,24 @@
         let selectedType = 'Total'; // i.e. the count of all the disasters as default value
         let selectedYear = 2023;
         
-        populate_color(tobacco, selectedType, selectedYear);
+        populate_color(disasters, selectedType, selectedYear);
+
         const selectElement = document.getElementById('typeSelect');
         selectElement.addEventListener('change', (event) => {
             // get selection from menu
-            selectedSex = event.target.value;
+            selectedType = event.target.value;
             // clear out all element before updating
             g.selectAll("path").remove([d3.text, d3.fill]);
             svg.selectAll(".map-legend").remove();
             // Update the map based on the selected gender
-            populate_color(tobacco, selectedSex, selectedYear); 
+            populate_color(disasters, selectedType, selectedYear);
         });
 
         const yearSlider = document.getElementById('yearSlider');
         const yearValueDisplay = document.getElementById('yearValue');
 
         yearSlider.addEventListener('input', (event) => {
-            const years = [1953, 1954, 1955, 1956, 1957, 1958, 1959, 1960, 1961, 1962, 1963,
-       1964, 1965, 1966, 1967, 1968, 1969, 1970, 1971, 1972, 1973, 1974,
-       1975, 1976, 1977, 1978, 1979, 1980, 1981, 1982, 1983, 1984, 1985,
-       1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996,
-       1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
-       2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018,
-       2019, 2020, 2021, 2022, 2023]; 
-            selectedYear = years[event.target.value];
+            selectedYear = event.target.value;
             yearValueDisplay.textContent = selectedYear; // Update the display next to the slider
 
             // Clear the existing map visualization
@@ -222,7 +285,7 @@
 <main>
     <article id="title">
         <h1 style="font-size: 24px; font-weight: bold; color: #333; margin-bottom: 5px; margin-left: 220px;">
-            World-Wide Tobacco Usage Per Gender Over Time</h1>
+            Nature Disasters Happened in U.S. Over Time</h1>
     </article>
     <div class="graph-container">
         <style>
@@ -233,12 +296,16 @@
         
             .controls-container {
                 position: relative; 
-                bottom: 63px; 
+                bottom: 33px; 
                 left: 0; 
                 padding: 0px; 
             }
-        
-            .dropdown-container, .slider-container {
+            
+            .slider-container {
+
+            }
+
+            .dropdown-container {
                 margin-bottom: 10px; 
             }
         </style>
@@ -246,16 +313,38 @@
     <div class="controls-container">
         <div class="slider-container">
             <label for="yearSlider">Select Year: </label>
-            <input type="range" id="yearSlider" min="0" max="9" value="0" step="1">
-            <span id="yearValue">2000</span>
+            <input type="range" id="yearSlider" min="1953" max="2023" value="1953" step="1">
+            <span id="yearValue">1953</span>
         </div>
 
         <div class="dropdown-container">
-            <label for="genderSelect">Select Gender: </label>
-            <select id="genderSelect">
-                <option value="Both sexes">Both sexes</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
+            <label for="typeSelect">Select Disaster Type: </label>
+            <select id="typeSelect">
+                <option value="Total">Total</option>
+                <option value="Biological">Biological</option>
+                <option value="Coastal Storm">Coastal Storm</option>
+                <option value="Dam/Levee Break">Dam/Levee Break</option>
+                <option value="Drought">Drought</option>
+                <option value="Earthquake">Earthquake</option>
+                <option value="Fire">Fire</option>
+                <option value="Fishing Losses">Fishing Losses</option>
+                <option value="Flood">Flood</option>
+                <option value="Freezing">Freezing</option>
+                <option value="Human Cause">Human Cause</option>
+                <option value="Hurricane">Hurricane</option>
+                <option value="Mud/Landslide">Mud/Landslide</option>
+                <option value="Other">Other</option>
+                <option value="Severe Ice Storm">Severe Ice Storm</option>
+                <option value="Severe Storm">Severe Storm</option>
+                <option value="Snowstorm">Snowstorm</option>
+                <option value="Terrorist">Terrorist</option>
+                <option value="Tornado">Tornado</option>
+                <option value="Toxic Substances">Toxic Substances</option>
+                <option value="Tropical Storm">Tropical Storm</option>
+                <option value="Tsunami">Tsunami</option>
+                <option value="Typhoon">Typhoon</option>
+                <option value="Volcanic Eruption">Volcanic Eruption</option>
+                <option value="Winter Storm">Winter Storm</option>
             </select>
         </div>
     </div>
