@@ -181,7 +181,7 @@
             const legendWidth = 300, legendHeight = 20, legendMargin = {top: 10, right: 60, bottom: 40, left: 60};
 
             // Create a sequential color scale (if different, adjust as needed)
-            const colorScale = d3.scaleSequential(d3.extent(disasters.map(d => +d[disaster_type])), d3.interpolateYlGnBu);
+            const colorScale = d3.scaleSequential(d3.extent(disasters.map(d => +d[disaster_type])), d3.interpolateReds);
 
             // Define the legend scale
             const legendScale = d3.scaleLinear()
