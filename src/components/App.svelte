@@ -1,71 +1,72 @@
 <script>
-    import * as d3 from "d3";
-    import * as topojson from "topojson";
     import { onMount } from 'svelte';
+    import * as d3 from 'd3';
+    import * as topojson from "topojson";
+    let activeSection = 0; // Reactive variable to track the active story section
 
     function rename() {
-        return new Map([
-            ['AL', 'Alabama'], 
-            ['AK', 'Alaska'], 
-            ['AS', 'American Samoa'], 
-            ['AZ', 'Arizona'], 
-            ['AR', 'Arkansas'], 
-            ['AA', 'Armed Forces Americas'], 
-            ['AE', 'Armed Forces Europe'], 
-            ['AP', 'Armed Forces Pacific'], 
-            ['CA', 'California'], 
-            ['CO', 'Colorado'], 
-            ['CT', 'Connecticut'], 
-            ['DE', 'Delaware'], 
-            ['DC', 'District Of Columbia'], 
-            ['FL', 'Florida'], 
-            ['GA', 'Georgia'], 
-            ['GU', 'Guam'], 
-            ['HI', 'Hawaii'], 
-            ['ID', 'Idaho'], 
-            ['IL', 'Illinois'], 
-            ['IN', 'Indiana'], 
-            ['IA', 'Iowa'], 
-            ['KS', 'Kansas'], 
-            ['KY', 'Kentucky'], 
-            ['LA', 'Louisiana'], 
-            ['ME', 'Maine'], 
-            ['MH', 'Marshall Islands'], 
-            ['MD', 'Maryland'], 
-            ['MA', 'Massachusetts'], 
-            ['MI', 'Michigan'], 
-            ['MN', 'Minnesota'], 
-            ['MS', 'Mississippi'], 
-            ['MO', 'Missouri'], 
-            ['MT', 'Montana'], 
-            ['NE', 'Nebraska'], 
-            ['NV', 'Nevada'], 
-            ['NH', 'New Hampshire'], 
-            ['NJ', 'New Jersey'], 
-            ['NM', 'New Mexico'], 
-            ['NY', 'New York'], 
-            ['NC', 'North Carolina'], 
-            ['ND', 'North Dakota'], 
-            ['NP', 'Northern Mariana Islands'], 
-            ['OH', 'Ohio'], 
-            ['OK', 'Oklahoma'], 
-            ['OR', 'Oregon'], 
-            ['PA', 'Pennsylvania'], 
-            ['PR', 'Puerto Rico'], 
-            ['RI', 'Rhode Island'], 
-            ['SC', 'South Carolina'], 
-            ['SD', 'South Dakota'], 
-            ['TN', 'Tennessee'], 
-            ['TX', 'Texas'], 
-            ['VI', 'US Virgin Islands'], 
-            ['UT', 'Utah'], 
-            ['VT', 'Vermont'], 
-            ['VA', 'Virginia'], 
-            ['WA', 'Washington'], 
-            ['WV', 'West Virginia'], 
-            ['WI', 'Wisconsin'], 
-            ['WY', 'Wyoming']]);
-    }
+            return new Map([
+                ['AL', 'Alabama'], 
+                ['AK', 'Alaska'], 
+                ['AS', 'American Samoa'], 
+                ['AZ', 'Arizona'], 
+                ['AR', 'Arkansas'], 
+                ['AA', 'Armed Forces Americas'], 
+                ['AE', 'Armed Forces Europe'], 
+                ['AP', 'Armed Forces Pacific'], 
+                ['CA', 'California'], 
+                ['CO', 'Colorado'], 
+                ['CT', 'Connecticut'], 
+                ['DE', 'Delaware'], 
+                ['DC', 'District Of Columbia'], 
+                ['FL', 'Florida'], 
+                ['GA', 'Georgia'], 
+                ['GU', 'Guam'], 
+                ['HI', 'Hawaii'], 
+                ['ID', 'Idaho'], 
+                ['IL', 'Illinois'], 
+                ['IN', 'Indiana'], 
+                ['IA', 'Iowa'], 
+                ['KS', 'Kansas'], 
+                ['KY', 'Kentucky'], 
+                ['LA', 'Louisiana'], 
+                ['ME', 'Maine'], 
+                ['MH', 'Marshall Islands'], 
+                ['MD', 'Maryland'], 
+                ['MA', 'Massachusetts'], 
+                ['MI', 'Michigan'], 
+                ['MN', 'Minnesota'], 
+                ['MS', 'Mississippi'], 
+                ['MO', 'Missouri'], 
+                ['MT', 'Montana'], 
+                ['NE', 'Nebraska'], 
+                ['NV', 'Nevada'], 
+                ['NH', 'New Hampshire'], 
+                ['NJ', 'New Jersey'], 
+                ['NM', 'New Mexico'], 
+                ['NY', 'New York'], 
+                ['NC', 'North Carolina'], 
+                ['ND', 'North Dakota'], 
+                ['NP', 'Northern Mariana Islands'], 
+                ['OH', 'Ohio'], 
+                ['OK', 'Oklahoma'], 
+                ['OR', 'Oregon'], 
+                ['PA', 'Pennsylvania'], 
+                ['PR', 'Puerto Rico'], 
+                ['RI', 'Rhode Island'], 
+                ['SC', 'South Carolina'], 
+                ['SD', 'South Dakota'], 
+                ['TN', 'Tennessee'], 
+                ['TX', 'Texas'], 
+                ['VI', 'US Virgin Islands'], 
+                ['UT', 'Utah'], 
+                ['VT', 'Vermont'], 
+                ['VA', 'Virginia'], 
+                ['WA', 'Washington'], 
+                ['WV', 'West Virginia'], 
+                ['WI', 'Wisconsin'], 
+                ['WY', 'Wyoming']]);
+        }
 
     // stores all data here
     //
@@ -75,7 +76,8 @@
     let states = [];
     let statemesh = [];
 
-    onMount(async () => {
+
+  onMount(async () => {
         // read in disasters_cleaned
         const res1 = await fetch('disasters_cleaned.csv'); 
         const csv = await res1.text();
@@ -280,107 +282,62 @@
         }
     });
 
+  // Function to update map based on activeSection
+  function updateMap(section) {
+    // Use D3 to update the choropleth map based on the section's data
+  }
+
+  // Reactive statement to watch activeSection changes
+  $: {
+    if (activeSection !== undefined) {
+      updateMap(activeSection);
+    }
+  }
 </script>
 
-<main>
-    <article id="title">
-        <h1 style="font-size: 24px; font-weight: bold; color: #333; margin-bottom: 5px; margin-left: 220px;">
-            Nature Disasters Happened in U.S. Over Time</h1>
-    </article>
-    <div class="graph-container">
-        <style>
-            .graph-container {
-                position: relative; 
-                height: 100%; 
-            }
-        
-            .controls-container {
-                position: relative; 
-                bottom: 33px; 
-                left: 0; 
-                padding: 0px; 
-            }
-            
-            .slider-container {
+<style>
+  .background {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    outline: green solid 3px;
+  }
 
-            }
+  .foreground {
+    width: 50%;
+    margin: 0 auto;
+    height: auto;
+    position: relative;
+    outline: red solid 3px;
+  }
 
-            .dropdown-container {
-                margin-bottom: 10px; 
-            }
-        </style>
-    </div>
-    <div class="controls-container">
-        <div class="slider-container">
-            <label for="yearSlider">Select Year: </label>
-            <input type="range" id="yearSlider" min="1953" max="2023" value="1953" step="1">
-            <span id="yearValue">1953</span>
-        </div>
+  .progress-bars {
+    position: absolute;
+    background: rgba(170, 51, 120, 0.2) /*  40% opaque */;
+    visibility: visible;
+  }
 
-        <div class="dropdown-container">
-            <label for="typeSelect">Select Disaster Type: </label>
-            <select id="typeSelect">
-                <option value="Total">Total</option>
-                <option value="Biological">Biological</option>
-                <option value="Coastal Storm">Coastal Storm</option>
-                <option value="Dam/Levee Break">Dam/Levee Break</option>
-                <option value="Drought">Drought</option>
-                <option value="Earthquake">Earthquake</option>
-                <option value="Fire">Fire</option>
-                <option value="Fishing Losses">Fishing Losses</option>
-                <option value="Flood">Flood</option>
-                <option value="Freezing">Freezing</option>
-                <option value="Human Cause">Human Cause</option>
-                <option value="Hurricane">Hurricane</option>
-                <option value="Mud/Landslide">Mud/Landslide</option>
-                <option value="Other">Other</option>
-                <option value="Severe Ice Storm">Severe Ice Storm</option>
-                <option value="Severe Storm">Severe Storm</option>
-                <option value="Snowstorm">Snowstorm</option>
-                <option value="Terrorist">Terrorist</option>
-                <option value="Tornado">Tornado</option>
-                <option value="Toxic Substances">Toxic Substances</option>
-                <option value="Tropical Storm">Tropical Storm</option>
-                <option value="Tsunami">Tsunami</option>
-                <option value="Typhoon">Typhoon</option>
-                <option value="Volcanic Eruption">Volcanic Eruption</option>
-                <option value="Winter Storm">Winter Storm</option>
-            </select>
-        </div>
-    </div>
-    <button type="button" class="collapsible">Team Writeup (Click to open)</button>
-        <div class="content">
-        <p>
-            <p>
-                <strong>DSC106 Final Project Writeup</strong>
-              </p>
-              <p>Group members: Nicholas Jumaoas, Jiaqing Yan, Yosen Lin</p>
-              <p>COMING SOON</p>
-              
-              
-        </div>
-        <style>
-            .collapsible {
-            background-color: #eee;
-            color: #444;
-            cursor: pointer;
-            padding: 18px;
-            width: 100%;
-            border: none;
-            text-align: left;
-            outline: none;
-            font-size: 15px;
-            }
+  section {
+    height: 80vh;
+    background-color: rgba(0, 0, 0, 0.2); /* 20% opaque */
+    /* color: white; */
+    outline: magenta solid 3px;
+    text-align: center;
+    max-width: 750px; /* adjust at will */
+    color: black;
+    padding: 1em;
+    margin: 0 0 2em 0;
+  }
+</style>
 
-            .active, .collapsible:hover {
-            background-color: #ccc;
-            }
+<!-- Story sections -->
+<div id="1960" on:enter={() => (activeSection = 1)}>1960's </div>
+<div id="1970" on:enter={() => (activeSection = 2)}>1970's </div>
+<div id="1980" on:enter={() => (activeSection = 1)}>1980's </div>
+<div id="1990" on:enter={() => (activeSection = 2)}>1990's </div>
+<div id="2000" on:enter={() => (activeSection = 1)}>2000's </div>
+<div id="2010" on:enter={() => (activeSection = 2)}>2010's </div>
+<div id="2020" on:enter={() => (activeSection = 1)}>2020's </div>
 
-            .content {
-            padding: 0 18px;
-            display: none;
-            overflow: hidden;
-            background-color: #f1f1f1;
-            }
-        </style>
-</main>
+<!-- Choropleth map container -->
+<div id="map"></div>
