@@ -77,222 +77,222 @@
     let statemesh = [];
 
 
-  onMount(async () => {
-        // read in disasters_cleaned
-        const res1 = await fetch('disasters_cleaned.csv'); 
-        const csv = await res1.text();
-        let disasters = d3.csvParse(csv, d3.autoType)
-        console.log(disasters);
+    onMount(async () => {
+            // read in disasters_cleaned
+            const res1 = await fetch('disasters_by_decade.csv'); 
+            const csv = await res1.text();
+            let disasters = d3.csvParse(csv, d3.autoType)
+            console.log(disasters);
 
-        // read in topojson
-        const res2 = await fetch('us.json');
-        const data = await res2.json();
-        states = topojson.feature(
-            data,
-            data.objects.states
-        );
-        statemesh = topojson.mesh(
-            data,
-            data.objects.states,
-            (a, b) => a !== b
-        ); 
-
-        // Update country names in your dataset
-        const renameMap = rename();
-        disasters.forEach(d => {
-
-            if (renameMap.has(d.state)) {
-                d.state = renameMap.get(d.state); // Replace with the name from the map
-            }
-        });
-
-        // creates SVG with specified characteristics
-        const width = 1000;
-        const marginTop = 46;
-        const height = width / 2 + marginTop;
-
-        const svg = d3
-            .select(".graph-container")
-            .append("svg")
-            .attr("width", width)
-            .attr("height", height);
-
-        // creates base map
-        const projection = d3.geoAlbersUsa();
-        const path = d3.geoPath(projection);
-
-        // creates map border
-        svg
-            .append("path")
-            .datum({ type: "Sphere" })
-            .attr("fill", "white")
-            .attr("stroke", "currentColor")
-            .attr("d", path);
-
-        const g = svg.append("g");
-
-        function populate_color(dataset, disaster_type, year){
-
-            // creates color code for our map
-            const globalValueExtent = d3.extent(disasters, d => d[disaster_type]);
-            // Define a global color scale
-            const globalColorScale = d3.scaleSequential(globalValueExtent, d3.interpolateReds);
-            const defaultColor = "#cccccc";
-
-            const filtered = dataset.filter(
-            (entry) => entry.year == year);
-
-            const valuemap = new Map(
-                filtered.map((d) => [d.state, +d[disaster_type]])
+            // read in topojson
+            const res2 = await fetch('us.json');
+            const data = await res2.json();
+            states = topojson.feature(
+                data,
+                data.objects.states
             );
+            statemesh = topojson.mesh(
+                data,
+                data.objects.states,
+                (a, b) => a !== b
+            ); 
 
-            // assigns colors to countries based on FactValueNumeric data
-            
-            g.selectAll("path")
-                .data(states.features)
-                .join("path")
-                .attr("fill", d => {
-                    const stateName = d.properties.name; // Get the country name from the GeoJSON feature
-                    const dataValue = valuemap.get(stateName); // Attempt to get the data value for this country
+            // Update country names in your dataset
+            const renameMap = rename();
+            disasters.forEach(d => {
 
-                    // Check if the country was found in the dataset and has a valid data value
-                    if (dataValue !== undefined) {
-                        return globalColorScale(dataValue); // Use the data value to determine the color
-                    } else {
-                        return defaultColor; // Use the default color for countries not in the dataset
-                    }
-                })
-                .attr("d", path)
-                // tooltip
-                .append("title")
-                .text(d => {
-                    const stateName = d.properties.name;
-                    const dataValue = valuemap.get(stateName); // Get the data value for this country
-                    // Check if the country was found in the dataset and has a valid data value
-                    return dataValue !== undefined ? `${stateName}\n${dataValue} Times This Year` : `${stateName}\nNo Disasters Recorded`;
-                });
-
-            // adds a white border between countries for *aesthetics*
-            svg
-                .append("path")
-                .datum(statemesh)
-                .attr("fill", "none")
-                .attr("stroke", "white")
-                .attr("d", path);
-
-            const legendWidth = 300, legendHeight = 20, legendMargin = {top: 10, right: 60, bottom: 40, left: 60};
-
-            // Create a sequential color scale (if different, adjust as needed)
-            const colorScale = d3.scaleSequential(d3.extent(disasters.map(d => +d[disaster_type])), d3.interpolateReds);
-
-            // Define the legend scale
-            const legendScale = d3.scaleLinear()
-                .domain(d3.extent(disasters.map(d => +d[disaster_type])))
-                .range([0, legendWidth]);
-
-            // Append a legend group to the SVG
-            const legend = svg.append("g")
-                .attr("class", "map-legend")
-                .attr("transform", `translate(${width - legendWidth - legendMargin.right},${height - legendMargin.bottom})`);
-
-            // Append gradient bar for the legend
-            const linearGradient = legend.append("defs")
-                .append("linearGradient")
-                .attr("id", "gradient")
-                .attr("x1", "0%")
-                .attr("x2", "100%")
-                .attr("y1", "0%")
-                .attr("y2", "0%");
-
-            colorScale.ticks().forEach(function(tick, i, ticks) {
-                linearGradient.append("stop")
-                    .attr("offset", `${100 * i / ticks.length}%`)
-                    .attr("stop-color", colorScale(tick));
+                if (renameMap.has(d.state)) {
+                    d.state = renameMap.get(d.state); // Replace with the name from the map
+                }
             });
 
-            // Append color bar
-            legend.append("rect")
-                .attr("width", legendWidth)
-                .attr("height", legendHeight)
-                .style("fill", "url(#gradient)");
+            // creates SVG with specified characteristics
+            const width = 1000;
+            const marginTop = 46;
+            const height = width / 2 + marginTop;
 
-            // Append legend axis
-            legend.append("g")
-                .attr("transform", `translate(0, ${legendHeight})`)
-                .call(d3.axisBottom(legendScale).ticks(6));
+            const svg = d3
+                .select(".graph-container")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
+
+            // creates base map
+            const projection = d3.geoAlbersUsa();
+            const path = d3.geoPath(projection);
+
+            // creates map border
+            svg
+                .append("path")
+                .datum({ type: "Sphere" })
+                .attr("fill", "white")
+                .attr("stroke", "currentColor")
+                .attr("d", path);
+
+            const g = svg.append("g");
+
+            function populate_color(dataset, disaster_type, decade){
+
+                // creates color code for our map
+                const globalValueExtent = d3.extent(disasters, d => d[disaster_type]);
+                // Define a global color scale
+                const globalColorScale = d3.scaleSequential(globalValueExtent, d3.interpolateReds);
+                const defaultColor = "#cccccc";
+
+                const filtered = dataset.filter(
+                (entry) => entry.decade == decade);
+
+                const valuemap = new Map(
+                    filtered.map((d) => [d.state, +d[disaster_type]])
+                );
+
+                // assigns colors to countries based on FactValueNumeric data
+                
+                g.selectAll("path")
+                    .data(states.features)
+                    .join("path")
+                    .attr("fill", d => {
+                        const stateName = d.properties.name; // Get the country name from the GeoJSON feature
+                        const dataValue = valuemap.get(stateName); // Attempt to get the data value for this country
+
+                        // Check if the country was found in the dataset and has a valid data value
+                        if (dataValue !== undefined) {
+                            return globalColorScale(dataValue); // Use the data value to determine the color
+                        } else {
+                            return defaultColor; // Use the default color for countries not in the dataset
+                        }
+                    })
+                    .attr("d", path)
+                    // tooltip
+                    .append("title")
+                    .text(d => {
+                        const stateName = d.properties.name;
+                        const dataValue = valuemap.get(stateName); // Get the data value for this country
+                        // Check if the state was found in the dataset and has a valid data value
+                        return dataValue !== undefined ? `${stateName}\n${dataValue} Times This Decade` : `${stateName}\nNo Disasters Recorded`;
+                    });
+
+                // adds a white border between countries for *aesthetics*
+                svg
+                    .append("path")
+                    .datum(statemesh)
+                    .attr("fill", "none")
+                    .attr("stroke", "white")
+                    .attr("d", path);
+
+                const legendWidth = 300, legendHeight = 20, legendMargin = {top: 10, right: 60, bottom: 40, left: 60};
+
+                // Create a sequential color scale (if different, adjust as needed)
+                const colorScale = d3.scaleSequential(d3.extent(disasters.map(d => +d[disaster_type])), d3.interpolateReds);
+
+                // Define the legend scale
+                const legendScale = d3.scaleLinear()
+                    .domain(d3.extent(disasters.map(d => +d[disaster_type])))
+                    .range([0, legendWidth]);
+
+                // Append a legend group to the SVG
+                const legend = svg.append("g")
+                    .attr("class", "map-legend")
+                    .attr("transform", `translate(${width - legendWidth - legendMargin.right},${height - legendMargin.bottom})`);
+
+                // Append gradient bar for the legend
+                const linearGradient = legend.append("defs")
+                    .append("linearGradient")
+                    .attr("id", "gradient")
+                    .attr("x1", "0%")
+                    .attr("x2", "100%")
+                    .attr("y1", "0%")
+                    .attr("y2", "0%");
+
+                colorScale.ticks().forEach(function(tick, i, ticks) {
+                    linearGradient.append("stop")
+                        .attr("offset", `${100 * i / ticks.length}%`)
+                        .attr("stop-color", colorScale(tick));
+                });
+
+                // Append color bar
+                legend.append("rect")
+                    .attr("width", legendWidth)
+                    .attr("height", legendHeight)
+                    .style("fill", "url(#gradient)");
+
+                // Append legend axis
+                legend.append("g")
+                    .attr("transform", `translate(0, ${legendHeight})`)
+                    .call(d3.axisBottom(legendScale).ticks(6));
+                
+                // Append legend title
+                legend.append("text")
+                    .attr("class", "legend-title")
+                    .attr("x", 300)
+                    .attr("y", -5)
+                    .attr("text-anchor", "end")
+                    .text("Decade " + decade + " " + disaster_type);
+            };
+
             
-            // Append legend title
-            legend.append("text")
-                .attr("class", "legend-title")
-                .attr("x", 300)
-                .attr("y", -5)
-                .attr("text-anchor", "end")
-                .text("Year " + year + " " + disaster_type);
-        };
 
-        
-
-        // use this function to update color
-        let selectedType = 'Total'; // i.e. the count of all the disasters as default value
-        let selectedYear = 2023;
-        
-        populate_color(disasters, selectedType, selectedYear);
-
-        const selectElement = document.getElementById('typeSelect');
-        selectElement.addEventListener('change', (event) => {
-            // get selection from menu
-            selectedType = event.target.value;
-            // clear out all element before updating
-            g.selectAll("path").remove([d3.text, d3.fill]);
-            svg.selectAll(".map-legend").remove();
-            // Update the map based on the selected gender
+            // use this function to update color
+            let selectedType = 'Total'; // i.e. the count of all the disasters as default value
+            let selectedDecade = 2020;
+            
             populate_color(disasters, selectedType, selectedYear);
-        });
 
-        const yearSlider = document.getElementById('yearSlider');
-        const yearValueDisplay = document.getElementById('yearValue');
+            const selectElement = document.getElementById('typeSelect');
+            selectElement.addEventListener('change', (event) => {
+                // get selection from menu
+                selectedType = event.target.value;
+                // clear out all element before updating
+                g.selectAll("path").remove([d3.text, d3.fill]);
+                svg.selectAll(".map-legend").remove();
+                // Update the map based on the selected gender
+                populate_color(disasters, selectedType, selectedYear);
+            });
 
-        yearSlider.addEventListener('input', (event) => {
-            selectedYear = event.target.value;
-            yearValueDisplay.textContent = selectedYear; // Update the display next to the slider
+            const yearSlider = document.getElementById('yearSlider');
+            const yearValueDisplay = document.getElementById('yearValue');
 
-            // Clear the existing map visualization
-            g.selectAll("path").remove([d3.text, d3.fill]);
-            svg.selectAll(".map-legend").remove();
+            yearSlider.addEventListener('input', (event) => {
+                selectedYear = event.target.value;
+                yearValueDisplay.textContent = selectedYear; // Update the display next to the slider
 
-            // Update the map visualization based on the new year
-            populate_color(disasters, selectedType, selectedYear);
-        });
-        
+                // Clear the existing map visualization
+                g.selectAll("path").remove([d3.text, d3.fill]);
+                svg.selectAll(".map-legend").remove();
 
-        // add collapsible for our team writeup
-        var coll = document.getElementsByClassName("collapsible");
-        var i;
+                // Update the map visualization based on the new year
+                populate_color(disasters, selectedType, selectedYear);
+            });
+            
 
-        for (i = 0; i < coll.length; i++) {
-        coll[i].addEventListener("click", function() {
-            this.classList.toggle("active");
-            var content = this.nextElementSibling;
-            if (content.style.display === "block") {
-            content.style.display = "none";
-            } else {
-            content.style.display = "block";
+            // add collapsible for our team writeup
+            var coll = document.getElementsByClassName("collapsible");
+            var i;
+
+            for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.display === "block") {
+                content.style.display = "none";
+                } else {
+                content.style.display = "block";
+                }
+            });
             }
         });
-        }
-    });
 
-  // Function to update map based on activeSection
-  function updateMap(section) {
-    // Use D3 to update the choropleth map based on the section's data
-  }
-
-  // Reactive statement to watch activeSection changes
-  $: {
-    if (activeSection !== undefined) {
-      updateMap(activeSection);
+    // Function to update map based on activeSection
+    function updateMap(section) {
+        // Use D3 to update the choropleth map based on the section's data
     }
-  }
+
+    // Reactive statement to watch activeSection changes
+    $: {
+        if (activeSection !== undefined) {
+        updateMap(activeSection);
+        }
+    }
 </script>
 
 <style>
