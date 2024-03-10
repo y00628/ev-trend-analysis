@@ -234,7 +234,90 @@
                 .text("Year " + year + " " + disaster_type);
         };
 
-        
+        // Function to start or pause the animation
+        function toggleAnimation() {
+            const yearSlider = d3.select("#yearSlider");
+            const playPauseButton = d3.select("#playPauseButton");
+            const minYear = +yearSlider.attr("min");
+            const maxYear = +yearSlider.attr("max");
+
+            if (!isAnimating) {
+                playPauseButton.text("Pause");
+                isAnimating = true;
+
+                animationInterval = setInterval(() => {
+                    let currentYear = +yearSlider.property("value");
+                    if (currentYear < maxYear) {
+                        currentYear++;
+                        
+                    } else {
+                        /*
+                        clearInterval(animationInterval);
+                        playPauseButton.text("Play");
+                        isAnimating = false;
+                        */
+                        currentYear = minYear;
+                    }
+
+                    yearSlider.property("value", currentYear);
+                    yearSlider.dispatch("input"); // Trigger the input event programmatically
+                }, 500); // Update interval in milliseconds
+
+                
+
+            } else {
+                // Pause the animation
+                clearInterval(animationInterval);
+                playPauseButton.text("Play");
+                isAnimating = false;
+            }
+        }
+
+        // Attach the toggle function to the button
+        d3.select("#playPauseButton").on("click", toggleAnimation);
+
+    // Function to handle the input from the year textbox
+        function handleYearInput() {
+            const yearInput = document.getElementById('yearInput');
+            const warningMessage = document.getElementById('warningMessage');
+            const enteredYear = +yearInput.value; // Convert input to a number
+            const pause = document.getElementById('playPause');
+
+            // Check if the entered year is within the valid range
+            if (enteredYear >= 1960 && enteredYear <= 2023) {
+                warningMessage.style.display = 'none'; // Hide warning message
+
+                if (pause.value == 'Yes') {
+                    clearInterval(animationInterval); // Stop any ongoing animation
+                    d3.select("#playPauseButton").text("Play");
+                    isAnimating = false;
+                } else {
+                    d3.select("#playPauseButton").text("Pause");
+                    isAnimating = true;
+                }
+                
+
+                // Update the slider and the visualization
+                d3.select("#yearSlider").property("value", enteredYear);
+                d3.select("#yearSlider").dispatch("input");
+            } else {
+                // Display a warning message if the input is invalid
+                warningMessage.style.display = 'block';
+                warningMessage.innerText = 'Please enter a year between 1960 and 2023.';
+            }
+        }
+
+        // Add an event listener to the year input textbox
+        document.getElementById('yearInput').addEventListener('change', handleYearInput);
+
+
+        // More user friendly interface
+        document.getElementById('yearInput').addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            handleYearInput(); // Directly call the handler function
+        }
+});
+
 
         // use this function to update color
         let selectedType = 'Total'; // i.e. the count of all the disasters as default value
@@ -318,12 +401,26 @@
     </div>
     <div class="controls-container">
         <div class="slider-container">
-            <label for="yearSlider">Select Year: </label>
+            <label for="yearSlider">Year: </label>
             <input type="range" id="yearSlider" min="1960" max="2023" value="1960" step="1">
             <span id="yearValue">1960</span>
             <button id="playPauseButton">Play</button>
         </div>
 
+        <div class="year-input-container">
+            <label for="yearInput">Skip to: </label>
+            <input type="text" id="yearInput" placeholder="1960-2023">
+
+            <label for="playPause">Pause the slider?  </label>
+            <select id="playPause">
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+        </div>
+        <div id="warningMessage" style="display: none; color: red;"></div>
+
+
+        
         <div class="dropdown-container">
             <label for="typeSelect">Select Disaster Type: </label>
             <select id="typeSelect">
@@ -353,7 +450,12 @@
                 <option value="Volcanic Eruption">Volcanic Eruption</option>
                 <option value="Winter Storm">Winter Storm</option>
             </select>
+
+    
+
         </div>
+
+        
     </div>
     <button type="button" class="collapsible">Team Writeup (Click to open)</button>
         <div class="content">
