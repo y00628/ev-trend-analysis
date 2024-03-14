@@ -102,13 +102,12 @@
         ); 
 
         // Update country names in your dataset
-        const renameMap = rename();
-        carbon.forEach(d => {
-
-            if (renameMap.has(d.state)) {
-                d.state = renameMap.get(d.state); // Replace with the name from the map
-            }
-        });
+        //const renameMap = rename();
+        //carbon.forEach(d => {
+        //    if (renameMap.has(d.State)) {
+        //        d.State = renameMap.get(d.State); // Replace with the name from the map
+        //    }
+        //});
 
         // creates SVG with specified characteristics
         const width = 1000;
@@ -135,20 +134,20 @@
 
         const g = svg.append("g");
 
+        // creates a fixed scale
+        const max_carbon_year = 2018;
+        const globalValueExtent = d3.extent(carbon, d => d[max_carbon_year]);
+        // Define a global color scale
+        const globalColorScale = d3.scaleSequential(globalValueExtent, d3.interpolateReds);
+        const defaultColor = "#cccccc";
+
+
         function populate_color(dataset, year){
-
-            // creates color code for our map
-            const globalValueExtent = d3.extent(carbon, d => d.value);
-            // Define a global color scale
-            const globalColorScale = d3.scaleSequential(globalValueExtent, d3.interpolateReds);
-            const defaultColor = "#cccccc";
-
-            const filtered = dataset.filter(
-            (entry) => entry.year == year);
-
             const valuemap = new Map(
-                filtered.map((d) => [d.state, +d.va])
+                dataset.map((d) => [d.State, +d[year]])
             );
+
+            console.log(valuemap);
 
             // assigns colors to countries based on FactValueNumeric data
             
@@ -187,11 +186,11 @@
             const legendWidth = 300, legendHeight = 20, legendMargin = {top: 10, right: 60, bottom: 40, left: 60};
 
             // Create a sequential color scale (if different, adjust as needed)
-            const colorScale = d3.scaleSequential(d3.extent(carbon.map(d => +d.value)), d3.interpolateReds);
+            const colorScale = d3.scaleSequential(d3.extent(carbon.map(d => +d[max_carbon_year])), d3.interpolateReds);
 
             // Define the legend scale
             const legendScale = d3.scaleLinear()
-                .domain(d3.extent(carbon.map(d => +d.value)))
+                .domain(d3.extent(carbon.map(d => +d[max_carbon_year])))
                 .range([0, legendWidth]);
 
             // Append a legend group to the SVG
@@ -231,7 +230,7 @@
                 .attr("x", 300)
                 .attr("y", -5)
                 .attr("text-anchor", "end")
-                .text("Year " + year + " " + disaster_type);
+                .text("Year " + year);
         };
 
         // Function to start or pause the animation
@@ -332,7 +331,7 @@
             svg.selectAll(".map-legend").remove();
 
             // Update the map visualization based on the new year
-            populate_color(carbon, selectedType, selectedYear);
+            populate_color(carbon, selectedYear);
         });
         
 
