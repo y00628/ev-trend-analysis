@@ -138,7 +138,7 @@
         function populate_color(dataset, disaster_type, year){
 
             // creates color code for our map
-            const globalValueExtent = d3.extent(disasters, d => d[disaster_type]);
+            const globalValueExtent = d3.extent(dataset, d => d[disaster_type]);
             // Define a global color scale
             const globalColorScale = d3.scaleSequential(globalValueExtent, d3.interpolateReds);
             const defaultColor = "#cccccc";
@@ -149,6 +149,8 @@
             const valuemap = new Map(
                 filtered.map((d) => [d.state, +d[disaster_type]])
             );
+
+            console.log(valuemap);
 
             // assigns colors to countries based on FactValueNumeric data
             
