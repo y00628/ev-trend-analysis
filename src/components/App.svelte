@@ -6,6 +6,16 @@
     import Cause from './Cause.svelte';
     import Correlation from './Correlation.svelte';
     let currentPage = 'Disasters';
+
+    import { writable } from 'svelte/store';
+
+    // Define a store for each collapsible's visibility state
+    let isContentVisible = writable(false);
+
+    // Function to toggle visibility
+    function toggleContent() {
+        isContentVisible.update(n => !n);
+    }
 </script>
 
 <body>
@@ -103,21 +113,60 @@
                 margin-right: 8px;">Carbon Usage By State Each Year 1970 - 2021
             </button>
         </container>
-        
-        {#if currentPage === 'Disasters'}
-            <div>
-                
-            </div>
-            <Disasters />
-        {:else if currentPage === 'Carbon'}
-            <Carbon />
-        {/if}
+        <container>
+            {#if currentPage === 'Disasters'}
+                <Disasters />
+            {:else if currentPage === 'Carbon'}
+                <Carbon />
+            {:else if currentPage === 'IceStormTexas'}
+                <IceStormTexas />
+            {:else if currentPage === 'WhatHappened'}
+                <WhatHappened />
+            {:else if currentPage === 'Cause'}
+                <Cause />
+            {:else if currentPage === 'Correlation'}
+                <Correlation />
+            {/if}
+        </container>
+        <br>
+        <button type="button" class="collapsible" on:click={toggleContent}>Team Writeup (Click to open)</button>
+        <div class="content">
+            {#if $isContentVisible}
+            <p>
+                <strong>DSC106 Final Project Writeup</strong>
+            </p>
+            <p>Group members: Nicholas Jumaoas, Jiaqing Yan, Yosen Lin</p>
+            <p>COMING SOON</p>
+            {/if}
+        </div>
     </div>
 </body>
 
 <style>
     .wrapper {
-    max-width: 970px;
-    margin: auto;
+        max-width: 970px;
+        margin: auto;
+    }
+
+    .collapsible {
+        background-color: #eee;
+        color: #444;
+        cursor: pointer;
+        padding: 18px;
+        width: 100%;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 15px;
+    }
+
+    .collapsible:hover {
+        background-color: #ccc;
+    }
+
+    .content {
+        padding: 0 18px;
+        overflow: hidden;
+        background-color: #f1f1f1;
     }
 </style>
