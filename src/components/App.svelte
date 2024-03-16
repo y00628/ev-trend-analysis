@@ -1,11 +1,21 @@
 <script>
     import Disasters from './Disasters.svelte';
     import Carbon from './Carbon.svelte';
-    import IceStormTexas from './IceStormTexas.svelte';
     import WhatHappened from './WhatHappened.svelte';
+    import IceStormTexas from './IceStormTexas.svelte';
     import Cause from './Cause.svelte';
     import Correlation from './Correlation.svelte';
-    let currentPage = 'Disasters';
+    let currentPage = 'Default';
+
+    import { writable } from 'svelte/store';
+
+    // Define a store for each collapsible's visibility state
+    let isContentVisible = writable(false);
+
+    // Function to toggle visibility
+    function toggleContent() {
+        isContentVisible.update(n => !n);
+    }
 </script>
 
 <body>
@@ -31,7 +41,7 @@
                 <meta charset="utf-8">
             </h3>
 
-            <button on:click={() => currentPage = 'IceStormTexas'} 
+            <button on:click={() => currentPage = 'WhatHappened'} 
                 style="background-color: #FF9C5C; 
                 color: black; 
                 padding: 10px 24px; 
@@ -39,10 +49,10 @@
                 border-radius: 4px; 
                 font-size: 15px;
                 cursor: pointer; 
-                margin-right: 8px;">Ice Storm in Texas
+                margin-right: 8px;">1. What Happened?
             </button>
             
-            <button on:click={() => currentPage = 'WhatHappened'}
+            <button on:click={() => currentPage = 'IceStormTexas'}
                 style="background-color: #FF9C5C; 
                 color: black; 
                 padding: 10px 24px; 
@@ -50,7 +60,7 @@
                 border-radius: 4px; 
                 font-size: 15px;
                 cursor: pointer; 
-                margin-right: 8px;">What Happened?
+                margin-right: 8px;">2. Ice Storm in Texas
             </button>
 
             <button on:click={() => currentPage = 'Cause'} 
@@ -61,7 +71,7 @@
                 border-radius: 4px; 
                 font-size: 15px;
                 cursor: pointer; 
-                margin-right: 8px;">Potential Cause
+                margin-right: 8px;">3. Potential Cause
             </button>
             
             <button on:click={() => currentPage = 'Correlation'}
@@ -72,7 +82,7 @@
                 border-radius: 4px; 
                 font-size: 15px;
                 cursor: pointer; 
-                margin-right: 8px;">Possible Correlation
+                margin-right: 8px;">4. Possible Correlation
             </button>
 
 
@@ -103,21 +113,64 @@
                 margin-right: 8px;">Carbon Usage By State Each Year 1970 - 2021
             </button>
         </container>
-        
-        {#if currentPage === 'Disasters'}
-            <div>
-                
-            </div>
-            <Disasters />
-        {:else if currentPage === 'Carbon'}
-            <Carbon />
-        {/if}
+        <container>
+            {#if currentPage === 'Default'}
+                <br><br><br>
+                <span style="background-color:transparent;font-family:Arial, Helvetica, sans-serif;font-size:20px;"><span style="font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;">Click a button to start explore! </span></span>
+                <br><br>
+            {:else if currentPage === 'Disasters'}
+                <Disasters />
+            {:else if currentPage === 'Carbon'}
+                <Carbon />
+            {:else if currentPage === 'WhatHappened'}
+                <WhatHappened />
+            {:else if currentPage === 'IceStormTexas'}
+                <IceStormTexas />
+            {:else if currentPage === 'Cause'}
+                <Cause />
+            {:else if currentPage === 'Correlation'}
+                <Correlation />
+            {/if}
+        </container>
+        <br>
+        <button type="button" class="collapsible" on:click={toggleContent}>Team Writeup (Click to open)</button>
+        <div class="content">
+            {#if $isContentVisible}
+            <p>
+                <strong>DSC106 Final Project Writeup</strong>
+            </p>
+            <p>Group members: Nicholas Jumaoas, Jiaqing Yan, Yosen Lin</p>
+            <p>COMING SOON</p>
+            {/if}
+        </div>
     </div>
 </body>
 
 <style>
     .wrapper {
-    max-width: 970px;
-    margin: auto;
+        max-width: 970px;
+        margin: auto;
+    }
+
+    .collapsible {
+        background-color: #eee;
+        color: #444;
+        cursor: pointer;
+        padding: 18px;
+        width: 100%;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 15px;
+    }
+
+    .collapsible:hover {
+        background-color: #ccc;
+    }
+
+    .content {
+        padding: 0 18px;
+        overflow: hidden;
+        background-color: #f1f1f1;
     }
 </style>
