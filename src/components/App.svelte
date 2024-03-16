@@ -49,7 +49,7 @@
                 border-radius: 4px; 
                 font-size: 15px;
                 cursor: pointer; 
-                margin-right: 8px;">What Happened?
+                margin-right: 8px;">1. What Happened?
             </button>
             
             <button on:click={() => currentPage = 'IceStormTexas'}
@@ -60,7 +60,7 @@
                 border-radius: 4px; 
                 font-size: 15px;
                 cursor: pointer; 
-                margin-right: 8px;">Ice Storm in Texas
+                margin-right: 8px;">2. Ice Storm in Texas
             </button>
 
             <button on:click={() => currentPage = 'Cause'} 
@@ -71,7 +71,7 @@
                 border-radius: 4px; 
                 font-size: 15px;
                 cursor: pointer; 
-                margin-right: 8px;">Potential Cause
+                margin-right: 8px;">3. Potential Cause
             </button>
             
             <button on:click={() => currentPage = 'Correlation'}
@@ -82,7 +82,7 @@
                 border-radius: 4px; 
                 font-size: 15px;
                 cursor: pointer; 
-                margin-right: 8px;">Possible Correlation
+                margin-right: 8px;">4. Possible Correlation
             </button>
 
 
@@ -115,7 +115,7 @@
         </container>
         <container>
             {#if currentPage === 'Default'}
-                <br><br>
+                <br><br><br>
                 <span style="background-color:transparent;font-family:Arial, Helvetica, sans-serif;font-size:20px;"><span style="font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;">Click a button to start explore! </span></span>
                 <br><br>
             {:else if currentPage === 'Disasters'}
