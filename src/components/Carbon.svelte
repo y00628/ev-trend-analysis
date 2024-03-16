@@ -21,7 +21,7 @@
         // read in carbon_cleaned
         const res1 = await fetch('carbon_cleaned.csv'); 
         const csv = await res1.text();
-        let carbon = d3.csvParse(csv, d3.autoType)
+        let carbon = d3.csvParse(csv, d3.autoType);
         console.log(carbon);
 
         // read in topojson
@@ -318,6 +318,6 @@
     </div>
     
     <style>
-        
+
     </style>
 </main>

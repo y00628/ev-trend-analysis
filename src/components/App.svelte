@@ -1,11 +1,11 @@
 <script>
     import Disasters from './Disasters.svelte';
     import Carbon from './Carbon.svelte';
-    import IceStormTexas from './IceStormTexas.svelte';
     import WhatHappened from './WhatHappened.svelte';
+    import IceStormTexas from './IceStormTexas.svelte';
     import Cause from './Cause.svelte';
     import Correlation from './Correlation.svelte';
-    let currentPage = 'Disasters';
+    let currentPage = 'Default';
 
     import { writable } from 'svelte/store';
 
@@ -41,18 +41,7 @@
                 <meta charset="utf-8">
             </h3>
 
-            <button on:click={() => currentPage = 'IceStormTexas'} 
-                style="background-color: #FF9C5C; 
-                color: black; 
-                padding: 10px 24px; 
-                border-color: black; 
-                border-radius: 4px; 
-                font-size: 15px;
-                cursor: pointer; 
-                margin-right: 8px;">Ice Storm in Texas
-            </button>
-            
-            <button on:click={() => currentPage = 'WhatHappened'}
+            <button on:click={() => currentPage = 'WhatHappened'} 
                 style="background-color: #FF9C5C; 
                 color: black; 
                 padding: 10px 24px; 
@@ -61,6 +50,17 @@
                 font-size: 15px;
                 cursor: pointer; 
                 margin-right: 8px;">What Happened?
+            </button>
+            
+            <button on:click={() => currentPage = 'IceStormTexas'}
+                style="background-color: #FF9C5C; 
+                color: black; 
+                padding: 10px 24px; 
+                border-color: black; 
+                border-radius: 4px; 
+                font-size: 15px;
+                cursor: pointer; 
+                margin-right: 8px;">Ice Storm in Texas
             </button>
 
             <button on:click={() => currentPage = 'Cause'} 
@@ -114,14 +114,18 @@
             </button>
         </container>
         <container>
-            {#if currentPage === 'Disasters'}
+            {#if currentPage === 'Default'}
+                <br><br>
+                <span style="background-color:transparent;font-family:Arial, Helvetica, sans-serif;font-size:20px;"><span style="font-style:normal;font-variant:normal;font-weight:400;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;">Click a button to start explore! </span></span>
+                <br><br>
+            {:else if currentPage === 'Disasters'}
                 <Disasters />
             {:else if currentPage === 'Carbon'}
                 <Carbon />
-            {:else if currentPage === 'IceStormTexas'}
-                <IceStormTexas />
             {:else if currentPage === 'WhatHappened'}
                 <WhatHappened />
+            {:else if currentPage === 'IceStormTexas'}
+                <IceStormTexas />
             {:else if currentPage === 'Cause'}
                 <Cause />
             {:else if currentPage === 'Correlation'}
